@@ -1,0 +1,10 @@
+{"namespace": "com.geo.rtb.avro",
+ "type": "record",
+ "name": "CPAarrive",
+ "fields": [
+     {"name": "time", "type": ["long", "null"]},
+     {"name": "ref", "type": ["string", "null"]},
+     {"name": "eid", "type": ["string", "null"]},
+     {"name": "pid", "type": ["string", "null"]}
+ ]
+}

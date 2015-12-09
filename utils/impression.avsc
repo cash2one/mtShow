@@ -1,0 +1,27 @@
+{"namespace": "com.geo.rtb.avro",
+ "type": "record",
+ "name": "Impression",
+ "fields": [
+    {"name": "imp_time", "type": ["long", "null"]},
+    {"name": "adver_id", "type": ["string", "null"]},
+    {"name": "adx_id", "type": "int"},
+    {"name": "creative_id", "type": ["string", "null"]},
+    {"name": "execute_id", "type": ["string", "null"]},
+    {"name": "pid", "type": ["string", "null"]},
+    {"name": "region", "type": ["string", "null"]},
+    {"name": "req_id", "type": "string"},
+    {"name": "tag_cr", "type": ["string", "null"]},
+    {"name": "tag_kw", "type": ["string", "null"]},
+    {"name": "hot_key", "type": ["string", "null"]},
+    {"name": "hot_url", "type": ["string", "null"]},
+    {"name": "bid_mode", "type": ["string", "null"]},
+    {"name": "bid_price", "type": ["float", "null"]},
+    {"name": "exchange_price", "type": ["float", "null"]},
+    {"name": "target_price", "type": ["string", "null"]},
+    {"name": "bid_core_id", "type": ["string", "null"]},
+    {"name": "ck_id", "type": ["string", "null"]},
+    {"name": "ishow_id", "type": ["string", "null"]},
+    {"name": "size", "type": ["string", "null"]},
+    {"name": "os", "type": ["string", "null"]}
+ ]
+}
