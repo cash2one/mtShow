@@ -90,6 +90,8 @@ class CPAHandler(tornado.web.RequestHandler):
         self.broker = broker
 
     def prepare(self):
+        self.set_header('Pragma', 'no-cache')
+        self.set_header("Cache-Control", 'no-cache,no-store,must-revalidate')
         self.set_header('P3P','CP="CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR"')
 
     def packInfo(self):

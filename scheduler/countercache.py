@@ -2,62 +2,32 @@
 # coding=utf-8
 
 import time
-import Queue
 import threading
 from settings import *
 from collections import defaultdict
 from scheduler.database import Database
-from scheduler.log import dbg, loginfo, logwarn, logerr
+from tornado.queues import Queue
+from tornado.ioloop import  IOLoop
+import tornado.gen
 
-CACHE_DUR_FREQ = 1
-CounterCacheQueue = Queue.Queue()
+from utils.general import INTER_MSG_SHOW, INTER_MSG_CLICK
 
-'''
-Queue Info
-{   
-    'type':1  # 1 pv 2 click 3 cpa ...  
-    'adx':xxx,
-    'eid':xxx,
-    'pid':xxx,
-    'aid':xxx,
-    'price':xxx
-}
+import logging
+logger = logging.getLogger(__name__)
 
-Cache info
-{
-    'pid_info':{
-        'exec:impression:pid:eid1':xxx,
-        'exec:impression:pid:eid2':xxx,
-        'exec:impression:pid:eid3':xxx,
-        'exec:exchangeprice:pid:%s':xxx,
-    },
+CACHE_DUR_FREQ = 5
 
-    'eid_info':{
-        'pv':{'id1':xxxx,'id2':xxx},
-        'exchange_price':{'id1':xxx, 'id2':xxx}
-    },
-
-    'aid_info':{
-        'exchange_price':{'id1':xxx, 'id2':xxx}
-    },
-
-    'adx_info':{
-        'pv':{'id1':xxx, 'id2':xxx},
-        'exchange_price':{'id1':xxx, 'id2':xxx}
-    }
-}
-
-'''
 
 class CounterCache(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
+        self.m_queue = Queue()
         self.m_CacheFlag = 1
         self.m_CounterCache = None
         self.m_Cache_A = defaultdict()
         self.m_Cache_B = defaultdict()
 
-        self.database = Database(kafka = False)#Don't Use Kafka Function
+        self.database = Database(redis_conf = REDISEVER)
 
         self.cacheInit(self.m_Cache_A)
         self.cacheInit(self.m_Cache_B)
@@ -88,6 +58,18 @@ class CounterCache(threading.Thread):
         cache['adx_info'] = { 'pv':defaultdict(int), 'exchange_price':defaultdict(int) }
         cache['aid_info'] = { 'exchange_price':defaultdict(int) }
 
+    @tornado.gen.coroutine
+    def queueMsgPut(self, msg):
+        yield self.m_queue.put(msg)
+
+    @tornado.gen.coroutine
+    def queueMsgGet(self):
+        while True:
+            msg = yield self.m_queue.get()
+            #print msg
+            logger.info('QueueGet:%r' % msg)
+            self.cacheInfoPut(msg)
+
     def cacheInfoPut(self, info):
         cache = self.switchCache()
         type = eid = pid = aid = price = adx = None
@@ -104,9 +86,9 @@ class CounterCache(threading.Thread):
         #if info.has_key('adx'):
         #    adx = info['adx']
         if type == 1 and eid and (price != None) and aid: # pv
-             
+
             cache['aid_info']['exchange_price'][aid] = cache['aid_info']['exchange_price'][aid] + price
-                
+
             cache['eid_info']['pv'][eid] = cache['eid_info']['pv'][eid] + 1
             cache['eid_info']['exchange_price'][eid] = cache['eid_info']['exchange_price'][eid] + price
             #cache['adx_info']['pv'][adx] = cache['adx_info']['pv'][adx] + 1
@@ -114,7 +96,7 @@ class CounterCache(threading.Thread):
         else:
             return None
 
-    
+
     def cacheDura(self):
         cache = None
         if self.m_CacheFlag == 1:
@@ -148,30 +130,6 @@ class CounterCache(threading.Thread):
                 self.clearCache()
 
             except Exception, e:
-                logerr(e)
                 continue
 
 
-class threadCounterCachePut(threading.Thread):
-    def __init__(self, cache, queue):
-        threading.Thread.__init__(self)
-        self.queue = queue
-        self.cache = cache
-    def run(self):
-        while True:
-            try:
-                info = self.queue.get(block = 1)
-                if info:
-                    #loginfo(info)
-                    self.cache.cacheInfoPut(info)
-
-            except Exception, e:
-                logerr(e)
-                #print e
-                continue
-
-def CounterCacheQueueHandle():
-    c_Cache = CounterCache()
-    c_Put = threadCounterCachePut( c_Cache, CounterCacheQueue )
-    c_Cache.start()
-    c_Put.start()

@@ -1,6 +1,0 @@
-2015-12-09 16:42:31,925 ERROR    Unable to receive data from Kafka
-Traceback (most recent call last):
-  File "build/bdist.linux-x86_64/egg/kafka/conn.py", line 103, in _read_bytes
-    raise socket.error("Not enough data to read message -- did server kill socket?")
-error: Not enough data to read message -- did server kill socket?
-2015-12-09 16:42:31,926 ERROR    FailedPayloadsError sending ProduceRequest (#1 of 1) to mt-show-v1:0 with msgs (Message(magic=0, attributes=0, key=None, value='{"advid": "10", "areaid": "0086-ffff-ffff", "exchange_price": "0", "bid_price": "2000", "unionid": 1, "pid": "mm_111", "userid": "YM77Xdu0A1FfuQXuWy354SsEF1RAkuJx", "t": "1449650548", "adx_uid": "1", "creativeid": "111", "rid": "xxxxxxxxxxxxxxx", "executeid": "1000"}'),)

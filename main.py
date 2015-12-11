@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-# Create by: Wang Songting
+# Create by: Yuanji
 # Date Time: 2013-5-23 14:00:00
 # Content:   main.py is responsible for initializing several Log services.
 #
@@ -11,21 +11,29 @@
 from subprocess import *
 import os,shutil,sys,socket
 import settings
+from settings import *
 import time
+
+SERVER_NAME = "statserver.py"
 
 class LogProject(object):
     def __init__(self,path,debug_flag):
         self.path = path
         self.pid_path = "%s/pid" % self.path
-        self.loger = "%s/logserv.py" % self.path
-        self.cront = "%s/crontsetexp.py" % self.path
+        self.loger = "%s/%s" % (self.path,SERVER_NAME)
         self.log_sock = 0
         self.log_sock_file = "%s/sock" % self.path
-        self.log_proj_id = str(settings.DEVICE_ID)
-        self.log_id_all = [conf[0] for conf in settings.SHOW_SERVER]
+
         self.log_id_dead = []
         self.log_is_dead = False
         self.debug_flag = debug_flag
+
+        self.port_list = list()
+        port_start = settings.SERVER_PORT[0]
+        port_end   = settings.SERVER_PORT[1] + 1
+        for p in xrange(port_start, port_end):
+            self.port_list.append(p)
+
 
     # Init IPC by AF_UNIX
     # Get Log service's result of Starting.
@@ -33,7 +41,7 @@ class LogProject(object):
         try:
             self.sock = socket.socket(socket.AF_UNIX,socket.SOCK_DGRAM)
             self.sock.bind(self.log_sock_file)
-            self.sock.settimeout(60)
+            self.sock.settimeout(5)
             return True
         except Exception, e:
             print 'log_sock_init Err: %s' % e
@@ -43,23 +51,24 @@ class LogProject(object):
         self.sock.close()
         os.remove(self.log_sock_file)
 
-    def start_cron(self):
-        Popen([self.cront])
     
     # Start each Log service.
-    def start_log(self,id):
-        Popen([self.loger,self.log_proj_id,id,self.debug_flag])
+    def start_log(self, port_id):
         try:
+            Popen("chmod +x %s" % SERVER_NAME, shell=True)
+            Popen([self.loger,port_id,self.debug_flag])
             # Waiting for Log service's result of Starting.
-            msg,addr = self.sock.recvfrom(128)
-            if msg == 'True':
-                print 'Start Loger %s OK' % id
-                return True
-            else:
-                print 'Start Loger %s Fail' % id
-                return False
+            if not MULT_PROCESS_MODEL:
+                msg,addr = self.sock.recvfrom(128)
+                if msg == 'True':
+                    print 'Start Server %s OK' % port_id
+                    return True
+                else:
+                    print 'Start Server %s Fail' % port_id
+                    return False
         except Exception, e:
-            print 'Start Loger %s Fail' % id
+            print 'Start Loger %s Fail' % port_id
+            print e
             return False
 
     def read_pid(self,id):
@@ -78,7 +87,8 @@ class LogProject(object):
         if not kill_argv == "kill -9 ":
             Popen(kill_argv,shell=True)
         shutil.rmtree(self.pid_path)
-        Popen("killall logserv.py", shell=True)
+        Popen("rm -rf sock", shell=True)
+        Popen("killall statserver.py", shell=True)
         time.sleep(1)
 
     def start(self):
@@ -90,22 +100,26 @@ class LogProject(object):
         
         os.mkdir(self.pid_path)
         
-        if not self.log_sock_init():
+        if not MULT_PROCESS_MODEL and not self.log_sock_init():
             print 'can not init loger socket'
             return False
 
-        #start crontab job
-        #self.start_cron()
-
-        for id in self.log_id_all:
+        for port_id in self.port_list:
             print "starting log service ..."
             #start receive service
-            flag = self.start_log(id)
-            if not flag:
-                self.kill_all()
-                self.log_sock_close()
-                return False
-        self.log_sock_close()
+            try:
+                flag = self.start_log(str(port_id))
+                if not flag:
+                    self.kill_all()
+                    return False
+            except Exception, e:
+                print e
+                Popen("rm -rf pid", shell=True)
+                Popen("rm -rf sock", shell=True)
+
+        if not MULT_PROCESS_MODEL:
+            self.log_sock_close()
+
         return True
 
     def stop(self):

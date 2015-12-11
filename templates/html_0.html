@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style type="text/css">
+      * { margin: 0; padding: 0; border: 0; }
+    </style>
+    <script type="text/javascript" src="http://material.istreamsche.com/aittp.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      var _d = {
+        "tpType": "{{ materail['m_type'] }}",//img/flash/mv
+        "mUrl": "{{ materail['m_url'] }}",
+        "cu": "{{ materail['click_url'] }}",
+        "su": "{{ materail['imp_url'] }}",
+        "cmu": "{{ materail['cm_url'] }}",
+        "s3u": "{{ materail['monitor_url'] }}",
+        "w": "{{ materail['m_width'] }}",
+        "h": "{{ materail['m_height'] }}",
+        "lImg": "http://material.istreamsche.com/logo/a_2.png",
+        "lhImg": " http://material.istreamsche.com/logo/b_2.png",
+        "lpst": "rb",
+        "lUrl": "http://aitou.geotmt.com/un/reg/form"
+      };
+      aittp.adHandler(_d);
+    </script>
+  </body>
+</html>
