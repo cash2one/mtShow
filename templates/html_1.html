@@ -1,0 +1,37 @@
+<script>
+    var mtadinfo = {
+        mt_ad_pid: {{ ad['pid'] }},
+        mt_ad_width: {{ ad['width'] }},
+        mt_ad_height: {{ ad['height'] }},
+        mt_ad_impid: {{ ad['impid'] }},//曝光id
+        mt_ad_advid: {{ ad['advid'] }},//广告主id
+        mt_ad_plid: {{ ad['pid'] }},//推广计划id
+        mt_ad_gpid: {{ ad['gpid'] }},//
+        mt_ad_cid: {{ ad['cid'] }},//创意id
+        mt_ad_ctype: {{ ad['ctype'] }},//创意类型 1图片,2swf,3flv,4 html 5 动态
+        mt_ad_ot: 3,//超时
+        mt_ad_of: 0,//超时
+        mt_ad_tview: {{ ad['tview'] }},//第三方曝光监测
+        mt_ad_ref: "",//来路,如果为空则window.referer,拼接到click链接参数里边
+        mt_ad_mtls: [{ //素材组
+            p0: {{ ad['mtls'][0]['p0'] }},//素材地址
+            p1: {{ ad['mtls'][0]['p1'] }},//广告主落地页,支持宏替换
+            p2: {{ ad['mtls'][0]['p2'] }},//click id 普通广告000,动态广告就是商品的id
+            p3: {{ ad['mtls'][0]['p3'] }},//宽
+            P4: {{ ad['mtls'][0]['p4'] }},//高
+            p5: "",//商品名称
+            p6: "",//售价
+            p7: "",//预留
+            p8: "",//预留
+            p9: ""//预留
+        }]
+    };
+
+    document.write('<span id=cont_mt_a_' + mtadinfo.mt_ad_pid + '></span>');
+    if (navigator.userAgent.indexOf('Windows NT 5.1') > -1) {
+        document.write('\<script type="text/javascript" language="javascript" charset="utf-8"  src="mtssp.js">\<\/script>');
+    } else {
+        document.write('\<script type="text/javascript" language="javascript" charset="utf-8"  src="mtssp.js">\<\/script>');
+    }
+
+</script>

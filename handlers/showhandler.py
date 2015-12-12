@@ -16,7 +16,7 @@ from tornado import gen
 
 import random, time, os, sys, socket
 from collections import defaultdict
-from adrender import defaultAdRender, creatAdRender, creatAdJsonBack, defaultAdJsonBack
+from adrender import creatDspAdBack
 from utils.general import *
 
 import logging
@@ -135,12 +135,15 @@ class SuperShowHandler(tornado.web.RequestHandler):
 
     def customResult(self):
         self.set_header("Content-Type", "text/html")
-        if self.res is None:
-            back = defaultAdJsonBack()
-        else:
-            self.dic['impid'] = self.res['impid'] = random_str()
-            #back = creatAdRender(self.dic, self.res)
-            back = creatAdJsonBack(self.dic, self.res)
+
+        create_dic = {
+            CRT_KEY_TYPE : 'img',
+            CRT_KEY_MONITOR_URL : 'http://www.123.com',
+            CRT_KEY_MATERIALS:[ { CRT_KEY_WIDTH:'300', CRT_KEY_HEIGHT:'250', CRT_KEY_CLICK_URL:'http://www.hao123.com'},
+                                CRT_KEY_MATERIALS:'',]
+
+        }
+            back = creatDspAdBack(self.dic, create_dic)
         self.write(back)
         self.finish()
 
@@ -176,6 +179,9 @@ class SuperShowHandler(tornado.web.RequestHandler):
 
             self.record(self.dic)
             self.sendMsg(self.dic)
+
+            self.customResult()
+
             logger.debug("---------------------------------------------")
             return
         except Exception, e:

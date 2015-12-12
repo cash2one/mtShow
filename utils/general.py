@@ -20,9 +20,32 @@ DEF_USER_COOKIE = 'm'
 DOMAIN = '.mtty.com'
 UC_EXPIRES = 5000
 
-''' keys '''
+''' user redis keys '''
 USER_CLICK_RECORD = "user:click:%s:aid:%s"
 USER_SHOW_RECORD = "user:show:%s:aid:%s"
+
+''' parameter  keys '''
+PARA_KEY_USER = 'userid'
+PARA_KEY_ADX = 'unionid'
+PARA_KEY_EID = 'executeid'
+PARA_KEY_CID = 'creativeid'
+PARA_KEY_PID = 'pid'
+PARA_KEY_AREAID = 'areaid'
+PARA_KEY_ADVID = 'advid'
+PARA_KEY_RID = 'rid'
+PARA_KEY_BID_PRICE = 'bid_price'
+PARA_KEY_EX_PRICE = 'exchange_price'
+PARA_KEY_WIDTH = 'ad_w'
+PARA_KEY_HEIGHT = 'ad_h'
+
+''' creative keys '''
+CRT_KEY_TYPE = "m_type"
+CRT_KEY_URL = 'material_url'
+CRT_KEY_WIDTH = 'width'
+CRT_KEY_HEIGHT = 'height'
+CRT_KEY_CLICK_URL = 'click_url'
+CRT_KEY_MONITOR_URL = 'monitor_url'
+CRT_KEY_MATERIALS = 'materials'
 
 RESPONSE_BLANK = """(function(){})();"""
 ''' header '''

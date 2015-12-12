@@ -4,6 +4,7 @@ import json
 from urllib import urlencode
 from collections import defaultdict
 from jinja2 import Environment, PackageLoader
+from utils.general import *
 
 env = Environment(loader=PackageLoader('adrender','templates'))
 
@@ -133,3 +134,49 @@ def creatAdJsonBack(req_dic, res_dic):
 
 def defaultAdJsonBack():
     return ''
+
+
+
+def creatDspAdBack( dic, create_dic ):
+    try:
+        res_back = defaultdict()
+        res_back['pid'] = dic[PARA_KEY_PID] if dic.has_key(PARA_KEY_PID) else ''
+        res_back['width'] = dic[PARA_KEY_WIDTH] if dic.has_key(PARA_KEY_WIDTH) else ''
+        res_back['height'] = dic[PARA_KEY_HEIGHT] if dic.has_key(PARA_KEY_HEIGHT) else ''
+        res_back['impid'] = dic[PARA_KEY_RID] if dic.has_key(PARA_KEY_RID) else ''
+        res_back['advid'] = dic[PARA_KEY_ADVID] if dic.has_key(PARA_KEY_ADVID) else ''
+        res_back['plid'] = ''
+        res_back['gpid'] = res_dic[PARA_KEY_EID] if res_dic.has_key(PARA_KEY_EID) else ''
+        res_back['cid'] = res_dic[PARA_KEY_CID] if res_dic.has_key(PARA_KEY_CID) else ''
+        res_back['logo'] = 'true'
+        '''ADD'''
+        res_back['ctype'] = '1'
+        res_back['adstype'] = '1'
+        # ctype 1
+        if create_dic.has_key(CRT_KEY_TYPE) and create_dic[CRT_KEY_TYPE] == 'img':
+            res_back['ctype'] = '1'
+        if create_dic.has_key(CRT_KEY_TYPE) and create_dic[CRT_KEY_TYPE] == 'flash':
+            res_back['ctype'] = '2'
+        if create_dic.has_key(CRT_KEY_TYPE) and create_dic[CRT_KEY_TYPE] == 'mv':
+            res_back['ctype'] = '3'
+
+        ''' monitor url '''
+        res_back['tview'] = create_dic[CRT_KEY_MONITOR_URL] if create_dic.has_key(CRT_KEY_MONITOR_URL) else ''
+
+        res_back['mtls'] = list()
+        if create_dic.has_key(CRT_KEY_MATERIALS):
+            for m in create_dic[CRT_KEY_MATERIALS]:
+                materail = defaultdict()
+                materail['p0'] = m[CRT_KEY_URL] if m.has_key(CRT_KEY_URL) else ''
+                materail['p1'] = m[CRT_KEY_CLICK_URL] if m.has_key(CRT_KEY_CLICK_URL) else ''
+                materail['p2'] = '000'
+                materail['p3'] = m[CRT_KEY_WIDTH] if m.has_key(CRT_KEY_WIDTH) else ''
+                materail['p4'] = m[CRT_KEY_HEIGHT] if m.has_key(CRT_KEY_HEIGHT) else ''
+                res_back['mtls'].append(materail)
+        html = template.render(ad = res_back)
+        #j_back = "%s(%s)" % (call, str( json.dumps(res_back) ))
+        #j_back = "%s" %  str( json.dumps(res_back) )
+        return html
+    except Exception, e:
+        pass
+
