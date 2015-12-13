@@ -22,10 +22,10 @@ from handlers.showhandler import *
 from handlers.clickhandler import *
 from scheduler.countercache import *
 from handlers.cookiehandler import *
-from scheduler.distributor import Distributor, Requester
+#from scheduler.distributor import Distributor, Requester
 from tornado.ioloop import  IOLoop
 from utils.kfconnect import KafkaCon
-from utils.log import init_syslog, logimpr, logclick, dbg, logwarn, logerr, _lvl
+from priceparser.priceparser import AdxPriceParser
 
 RESPONSE_BLANK = """(function(){})();"""
 REAL_IP = 'X-Real-Ip' # Need to config in nginx
@@ -47,13 +47,14 @@ def urlsafe_b64decode(s):
 
 class DefaultHandler(tornado.web.RequestHandler):
     def get(self, *args, **kwargs):
-        dbg('Default Handler.') 
+        logger.debug( self.request )
         self.write(RESPONSE_BLANK)
 
     
 class Application(tornado.web.Application):
     def __init__(self, broker):
         handlers = [
+            (r'/v',SuperShowHandler, dict(broker = broker)),
             (r'/s',SuperShowHandler, dict(broker = broker)),
             (r'/click',SuperClickHandler, dict(broker = broker)),
             (r'/c',SuperClickHandler, dict(broker = broker)),
@@ -87,9 +88,6 @@ class Application(tornado.web.Application):
             (r'/mzclick.*',SuperClickHandler, dict(broker = broker)),
             (r'/gyshow.*',SuperShowHandler, dict(broker = broker)),
             (r'/gyclick.*',SuperClickHandler, dict(broker = broker)),
-            (r'/active.*',SuperActiveHandler, dict(broker = broker)),
-            (r'/gm.gif*',CPAHandler, dict(broker = broker)),
-            (r'/gmtest.gif*',CPAHandler, dict(broker = broker)),
             (r'/(.*)',DefaultHandler)
         ]
 
@@ -106,7 +104,7 @@ class HttpLoop(object):
             http_server.listen(self.port)
             return True
         except Exception, e:
-            logerr("listen: %s" % e)
+            print e
             return False
 
     def bind(self):
@@ -116,7 +114,7 @@ class HttpLoop(object):
             http_server.start(num_processes=8)    
             return True
         except Exception, e:
-            logerr("bind: %s" % e)
+            print e
             return False
 
     def loop(self):
@@ -130,6 +128,7 @@ class Broker(object):
         self.countercache = CounterCache()
         #self.dist = Distributor()
         #self.requester = Requester()
+        self.adxPriceParser = AdxPriceParser()
         self.msg_server = KafkaCon()
         self.database = Database(redis_conf = REDISEVER)
 
@@ -189,7 +188,7 @@ if __name__ == '__main__':
         broker.pid = os.getpid()
         if not MULT_PROCESS_MODEL:
             broker.pid_file_init()
-        init_syslog()
+        #init_syslog()
    
         # Start HttpSock Thread
         http = HttpLoop(broker)

@@ -38,6 +38,7 @@ class SuperShowHandler(tornado.web.RequestHandler):
         self.broker = broker
         self.cookiehandler = self.broker.cookie
         self.ob_msg_server = broker.msg_server
+        self.adxPriceParser = broker.adxPriceParser
         self.real_price = 0
         self.adx = 0
 
@@ -57,6 +58,7 @@ class SuperShowHandler(tornado.web.RequestHandler):
     def dealCookie(self):
         try:
             # cookie identify
+            self.ucookie = self.get_cookie(DEF_USER_COOKIE)
             if not self.ucookie:
                 self.ucookie = self.cookiehandler.setCookie()
                 self.set_cookie(DEF_USER_COOKIE, self.ucookie, domain=DOMAIN, expires_days=UC_EXPIRES)
@@ -65,8 +67,8 @@ class SuperShowHandler(tornado.web.RequestHandler):
                     logger.error("UserCookie:%s is illegal!" % self.ucookie)
                     self.ucookie = self.cookiehandler.setCookie()
                     self.set_cookie(DEF_USER_COOKIE, self.ucookie, domain=DOMAIN, expires_days=UC_EXPIRES)
-            self.dic['uid'] = self.ucookie
-            logger.debug('cookie:%s' % self.dic['uid'])
+            self.dic['userid'] = self.ucookie
+            logger.debug('cookie:%s' % self.dic['userid'])
         except Exception:
             pass
 
@@ -119,7 +121,7 @@ class SuperShowHandler(tornado.web.RequestHandler):
 
     def sendMsg(self):
         try:
-            self.ob_msg_server.sendMsgToStat(T_IMP, self.dic):
+            self.ob_msg_server.sendMsgToStat(T_IMP, self.dic)
             logger.debug('Send Or Create Log_Msg_List OK!')
         except Exception,e:
             logger.error("SuperShowHandler: SendMsg Err :%s" % e)
@@ -138,17 +140,17 @@ class SuperShowHandler(tornado.web.RequestHandler):
 
         create_dic = {
             CRT_KEY_TYPE : 'img',
-            CRT_KEY_MONITOR_URL : 'http://www.123.com',
-            CRT_KEY_MATERIALS:[ { CRT_KEY_WIDTH:'300', CRT_KEY_HEIGHT:'250', CRT_KEY_CLICK_URL:'http://www.hao123.com'},
-                                CRT_KEY_MATERIALS:'',]
+            CRT_KEY_MONITOR_URL : '',
+            CRT_KEY_MATERIALS:[ { CRT_KEY_WIDTH:'300', CRT_KEY_HEIGHT:'250', CRT_KEY_CLICK_URL:'http://www.hao123.com',\
+                                CRT_KEY_URL:'http://123.56.15.234/data/creative_files/1/1/5de39424bfa942b8aaecdeee97b1b58e.jpg',}]
 
         }
+        if self.of == OF_FLAG_JSON:
             back = creatDspAdBack(self.dic, create_dic)
-        self.write(back)
+            self.write(back)
         self.finish()
 
     def getUriPar(self):
-        self.dic['userid'] = self.ucookie
         self.dic['unionid'] = self.get_argument('x', default = "")
         self.dic['executeid'] = self.get_argument('e', default = "")
         self.dic['creativeid'] = self.get_argument('c', default = "")
@@ -158,7 +160,9 @@ class SuperShowHandler(tornado.web.RequestHandler):
         self.dic['rid'] = self.get_argument('r', default = "")
         self.dic['bid_price'] = self.get_argument('b', default = "")
         self.dic['adx_uid'] = self.get_argument('u', default = "")
+        self.dic['xcurl'] = self.get_argument('l', default = "")
         self.of = self.get_argument('of', default = OF_FLAG_JSON)
+        #print self.dic
 
     @tornado.web.asynchronous
     @gen.coroutine
@@ -171,14 +175,15 @@ class SuperShowHandler(tornado.web.RequestHandler):
             self.dealCookie()
             self.getUriPar()
             self.dic['type'] = INTER_MSG_SHOW
-            self.dic['t'] = str(int(time.time()))
+            self.time = int(time.time())
+            self.dic['t'] = str( self.time )
             price = self.get_argument("p", default = '')
             if price:
                 self.parsePrice(str(price))
                 self.dic['exchange_price'] = str(self.real_price)
 
             self.record(self.dic)
-            self.sendMsg(self.dic)
+            self.sendMsg()
 
             self.customResult()
 

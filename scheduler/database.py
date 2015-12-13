@@ -112,6 +112,8 @@ class Database(object):
             today = self.today()
             key = "exec:impression:pid:%s:%s" % (today, eid)
             return self.red._hincr(key, pid)
+        except Exception,e:
+            print e
 
     def incEidPidClick(self, eid, pid):
         try:
@@ -119,6 +121,8 @@ class Database(object):
             today = self.today()
             key = "exec:click:pid:%s:%s" % (today, eid)
             return self.red._hincr(key, pid)
+        except Exception,e:
+            print e
 
     def incPidExPrice(self, eid, pid, price):
         try:
@@ -126,6 +130,8 @@ class Database(object):
             today = self.today()
             key = "exec:exchangeprice:pid:%s:%s" % (today, eid)
             return self.red._hincrby(key, pid, price)
+        except Exception,e:
+            print e
 
     def incPidPv(self, pid, eid):
         try:
@@ -203,7 +209,12 @@ class Database(object):
             return 0
 
     def setUserClickInfo(self, key, field, value):
-        tm = 7776000 # 90*24*60*60
-        self.red_proxy._hset(key, field, value)
-        return self.red_proxy._expire(key, tm)
+        try:
+            tm = 7776000 # 90*24*60*60
+            self.switch()
+            self.red._hset(key, field, value)
+            return self.red._expire(key, tm)
+        except Exception, e:
+            print e
+            return 0
 

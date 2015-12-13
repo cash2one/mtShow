@@ -100,7 +100,7 @@ class LogProject(object):
         
         os.mkdir(self.pid_path)
         
-        if not MULT_PROCESS_MODEL and not self.log_sock_init():
+        if not self.log_sock_init():
             print 'can not init loger socket'
             return False
 
@@ -117,8 +117,7 @@ class LogProject(object):
                 Popen("rm -rf pid", shell=True)
                 Popen("rm -rf sock", shell=True)
 
-        if not MULT_PROCESS_MODEL:
-            self.log_sock_close()
+        self.log_sock_close()
 
         return True
 

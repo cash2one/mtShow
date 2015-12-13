@@ -40,9 +40,10 @@ class KafkaCon():
                 self.stat = {
                          settings.T_IMP:show_producer,
                          settings.T_CLK:click_producer,
-                         settings.T_ACT:action_producer,
+                         settings.T_CPA:action_producer,
                         }
         except Exception, e:
+            print e
             logger.error('_initConnect Error:%s' % e)
 
     def _getPartion(self):

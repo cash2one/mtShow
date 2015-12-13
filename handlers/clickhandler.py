@@ -6,6 +6,7 @@
 # Date Time: 2015-04-22 15:36:00
 #
 ###############################################################################
+import json
 import uuid
 import urllib
 import tornado.web
@@ -17,6 +18,7 @@ from handlers.cookiehandler import *
 import random, time, os, sys, socket
 from collections import defaultdict
 from utils.general import INTER_MSG_CLICK
+from utils.general import *
 
 import logging
 logger = logging.getLogger(__name__)
@@ -48,15 +50,15 @@ class SuperClickHandler(tornado.web.RequestHandler):
 
     def recordClick(self):
         try:
-            rtb_type = msg["unionid"] if msg.has_key("unionid") else None
-            tid = msg['adx_uid'] if msg.has_key("adx_uid") else None
-            eid = msg["executeid"] if msg.has_key("executeid") else None
-            pid = msg["pid"] if msg.has_key('pid') else None
-            aid = msg['advid'] if msg.has_key('advid') else None
-            if eid and pid and aid:
+            rtb_type = self.dic["unionid"] if self.dic.has_key("unionid") else None
+            tid = self.dic['adx_uid'] if self.dic.has_key("adx_uid") else None
+            eid = self.dic["executeid"] if self.dic.has_key("executeid") else None
+            pid = self.dic["pid"] if self.dic.has_key('pid') else None
+            aid = self.dic['advid'] if self.dic.has_key('advid') else None
+            if eid and pid:
                 self.broker.database.incEidClick(eid,1)
                 self.broker.database.incEidPidClick(eid, pid )
-            logger.debug("increase Order Click OK!")
+                logger.debug("increase Order Click OK!")
             return True
         except Exception, e:
             logger.error('SuperClickHandler/recordClick: %s'% e)
@@ -66,7 +68,7 @@ class SuperClickHandler(tornado.web.RequestHandler):
         try:
             if self.dic.has_key('advid'):
                 userkey = USER_CLICK_RECORD % (self.ucookie, self.dic['advid'])
-                info = json.dumps(info)
+                info = json.dumps(self.dic)
                 self.broker.database.setUserClickInfo(userkey, int(self.time), info)
                 logger.debug("userClickRecord OK:  key->%s  field:%d  value:%s" % (userkey, int(self.time), info))
         except Exception, e:
@@ -82,6 +84,7 @@ class SuperClickHandler(tornado.web.RequestHandler):
     def dealCookie(self):
         try:
             # cookie identify
+            self.ucookie = self.get_cookie(DEF_USER_COOKIE)
             if not self.ucookie:
                 self.ucookie = self.cookiehandler.setCookie()
                 self.set_cookie(DEF_USER_COOKIE, self.ucookie, domain=DOMAIN, expires_days=UC_EXPIRES)
@@ -90,13 +93,12 @@ class SuperClickHandler(tornado.web.RequestHandler):
                     logger.error("UserCookie:%s is illegal!" % self.ucookie)
                     self.ucookie = self.cookiehandler.setCookie()
                     self.set_cookie(DEF_USER_COOKIE, self.ucookie, domain=DOMAIN, expires_days=UC_EXPIRES)
-            self.dic['uid'] = self.ucookie
-            logger.debug('cookie:%s' % self.dic['uid'])
+            self.dic['userid'] = self.ucookie
+            logger.debug('cookie:%s' % self.dic['userid'])
         except Exception:
             pass  
 
     def getUriPar(self):
-        self.dic['userid'] = self.ucookie
         self.dic['unionid'] = self.get_argument('x', default = "")
         self.dic['executeid'] = self.get_argument('e', default = "")
         self.dic['creativeid'] = self.get_argument('c', default = "")
@@ -106,6 +108,7 @@ class SuperClickHandler(tornado.web.RequestHandler):
         self.dic['rid'] = self.get_argument('r', default = "")
         self.dic['bid_price'] = self.get_argument('b', default = "")
         self.dic['adx_uid'] = self.get_argument('u', default = "")
+        self.dic['referer'] = self.get_argument('f', default = "")
         self.of = self.get_argument('of', default = OF_FLAG_JSON)
         self.aurl = self.get_argument("url", default = None)
 
@@ -114,6 +117,7 @@ class SuperClickHandler(tornado.web.RequestHandler):
         self.write(IMG_DATA)
 
     def dealRedirect(self):
+        self.dic['click_sourceid'] = random_str()
         if self.aurl:
             logger.info("Url:%s" % self.aurl)
             self.redirect(self.aurl)
@@ -125,10 +129,12 @@ class SuperClickHandler(tornado.web.RequestHandler):
             logger.debug("-------------CORE CLICK HANDLER----------------")
             self.dic = defaultdict()
             self.dic['type'] = INTER_MSG_CLICK
-            self.dic['t'] = str( int(time.time()) )
+            self.time = int(time.time())
+            self.dic['t'] = str( self.time )
 
             self.getIp()
             self.dealCookie()
+            self.getUriPar()
             self.dealRedirect()
             self.recordClick()
             self.userClickRecord()

@@ -12,8 +12,8 @@ INTER_MSG_SHOW = 1
 INTER_MSG_CLICK = 2
 
 ''' OF FLAG '''
-OF_FLAG_HMTL = '0'
-OF_FLAG_JSON = '1'
+OF_FLAG_JSON = '0'
+OF_FLAG_BACK = '1'
 
 ''' cookie '''
 DEF_USER_COOKIE = 'm'
@@ -37,6 +37,10 @@ PARA_KEY_BID_PRICE = 'bid_price'
 PARA_KEY_EX_PRICE = 'exchange_price'
 PARA_KEY_WIDTH = 'ad_w'
 PARA_KEY_HEIGHT = 'ad_h'
+PARA_KEY_AREA = 'areaid'
+PARA_KEY_XCURL = 'xcurl'
+PARA_KEY_REF = 'referer'
+PARA_KEY_SOURCEID = 'click_sourceid'
 
 ''' creative keys '''
 CRT_KEY_TYPE = "m_type"

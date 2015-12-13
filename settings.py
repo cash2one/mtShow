@@ -13,21 +13,24 @@
 '''设备ID'''
 DEVICE_ID = '03'
 
+LOG_LEVEL = 'INFO'
+
 '''Kafka Server:保存实时统计消息的Broker Server,分区个数5个
     根据分区个数起进程，每个进程负责处理一个分区的数据
 '''
 T_IMP = "mt-show-v1"
 T_CLK = "mt-click-v1"
 T_CPA = "test"
-T_COL = "test"
 
 
-MSG_STAT_SERVER = ('192.168.1.5',9092)
+MSG_SERVER = ('192.168.1.5',9092)
 SENDMSG = True
 PART_NUM = 1
 
+MULT_PROCESS_MODEL = False
+
 '''iSHOW服务配置'''
-SERVER_PORT = [10001,10008]
+SERVER_PORT = [9901,9904]
 
 '''频次控制接收端口'''
 FREQ_PORT = 7800
