@@ -86,9 +86,7 @@ class CounterCache(threading.Thread):
         #if info.has_key('adx'):
         #    adx = info['adx']
         if type == 1 and eid and (price != None) and aid: # pv
-
             cache['aid_info']['exchange_price'][aid] = cache['aid_info']['exchange_price'][aid] + price
-
             cache['eid_info']['pv'][eid] = cache['eid_info']['pv'][eid] + 1
             cache['eid_info']['exchange_price'][eid] = cache['eid_info']['exchange_price'][eid] + price
             #cache['adx_info']['pv'][adx] = cache['adx_info']['pv'][adx] + 1
@@ -105,21 +103,24 @@ class CounterCache(threading.Thread):
             cache = self.m_Cache_A
 
         #loginfo(cache)
-
         if cache.has_key('pid_info'):
             pass
         if cache.has_key('eid_info'):
-            for eid in cache['eid_info']['exchange_price'].iterkeys():
-                self.database.incEidHourSp(eid, cache['eid_info']['exchange_price'][eid])
-                dbg("increase Order:%s Hour Total Cash OK!" % str(eid))
-            for eid in cache['eid_info']['pv'].iterkeys():
-                self.database.incEidHourPv(eid, cache['eid_info']['pv'][eid])
-                dbg("increase Order:%s PV OK!" % str(eid))
+            it_p = cache['eid_info']['exchange_price']
+            it_m = cache['eid_info']['pv']
+            for eid in it_p.iterkeys():
+                self.database.incEidHourSp(eid, it_p[eid])
+                logger.debug("increase Order:%r Money:%r OK!" % (eid, it_p[eid]))
+            for eid in it_m.iterkeys():
+                self.database.incEidShow(eid, it_m[eid])
+                logger.debug("increase Order:%r PV:%r OK!" % (eid,it_m[eid]))
 
         if cache.has_key('aid_info'):
-            for aid in cache['aid_info']['exchange_price'].iterkeys():
-                self.database.incAdvBidSpend(aid, cache['aid_info']['exchange_price'][aid])
-                self.database.decAdvBidSpend(aid, "-%.3f" %  (float(cache['aid_info']['exchange_price'][aid])/1000))
+            it_a = cache['aid_info']['exchange_price']
+            for aid in it_a.iterkeys():
+                self.database.incAidHourSp(aid, it_a[aid])
+                self.database.decAdvBidSpend(aid, "-%.3f" %  (float(it_a[aid])/1000))
+                logger.debug("increase Advertiser:%s Money:%s!" % (aid, str(float(it_a[aid])/1000)) )
 
     def run(self):
         while True:
@@ -130,6 +131,7 @@ class CounterCache(threading.Thread):
                 self.clearCache()
 
             except Exception, e:
+                logger.error(e)
                 continue
 
 

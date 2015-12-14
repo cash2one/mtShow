@@ -95,14 +95,46 @@ class Database(object):
                 self.red._hincrby(key, hour, num)
         except Exception,e:
             print e
+
     def incEidShow(self, eid, num):
         try:
             if eid :
                 self.switch()
                 today = self.today()
                 hour = self.hour()
-                key = "eid:show:%s:%s" % (today, pid)
-                self.red._hincrby(key, hour, num)
+                key = "eid:show:%s:%s" % (today, eid)
+                self.red._hincrby(key, hour, int(num))
+        except Exception,e:
+            print e
+
+    def incEidHourSp(self, eid, num):
+        try:
+            if eid :
+                self.switch()
+                today = self.today()
+                hour = self.hour()
+                key = "eid:hourspend:%s:%s" % (today, eid)
+                self.red._hincrby(key, hour, int(num))
+        except Exception,e:
+            print e
+
+    def incAidHourSp(self, aid, num):
+        try:
+            if aid :
+                self.switch()
+                today = self.today()
+                hour = self.hour()
+                key = "adv:hourspend:%s:%s" % (today, aid)
+                self.red._hincrby(key, hour, int(num))
+        except Exception,e:
+            print e
+
+    def decAdvBidSpend(self, aid, num):
+        try:
+            if aid :
+                self.switch()
+                key = "adv:cash:%s" % (aid,)
+                self.red._decbyfloat(key, num)
         except Exception,e:
             print e
 
@@ -218,3 +250,10 @@ class Database(object):
             print e
             return 0
 
+    def getCreateInfo(self, cid):
+        try:
+            self.switch()
+            key_1 = "cid:detail:%s" % cid
+            return self.red._get(key_1)
+        except Exception, e:
+            print e

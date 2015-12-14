@@ -41,7 +41,7 @@ class LogProject(object):
         try:
             self.sock = socket.socket(socket.AF_UNIX,socket.SOCK_DGRAM)
             self.sock.bind(self.log_sock_file)
-            self.sock.settimeout(5)
+            self.sock.settimeout(3)
             return True
         except Exception, e:
             print 'log_sock_init Err: %s' % e
@@ -88,7 +88,7 @@ class LogProject(object):
             Popen(kill_argv,shell=True)
         shutil.rmtree(self.pid_path)
         Popen("rm -rf sock", shell=True)
-        Popen("killall statserver.py", shell=True)
+        #Popen("killall statserver.py", shell=True)
         time.sleep(1)
 
     def start(self):

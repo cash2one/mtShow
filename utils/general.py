@@ -58,6 +58,26 @@ REMOTE_IP = 'remote_ip'
 REFERER = 'Referer'
 USER_AGENT = 'User-Agent'
 
+
+def urlsafe_b64encode(string):
+    encoded = base64.urlsafe_b64encode(string)
+    return encoded.replace( '=', '' )
+
+def urlsafe_b64decode(s):
+    mod4 = len(s) % 4
+    if mod4:
+        s += ((4 - mod4) * '=')
+    return base64.urlsafe_b64decode(str(s))
+
+def toHex(s):
+    lst = []
+    for ch in s:
+        hv = hex(ord(ch)).replace('0x', '')
+        if len(hv) == 1:
+            hv = '0'+hv
+        lst.append(hv)
+    return reduce(lambda x,y:x+y, lst)
+
 def SOCK():
     try:
         soc = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -75,6 +95,13 @@ def random_str(randomlength = 16):
     for i in range(randomlength):
         str+=chars[random.randint(0, length)]
     return str
+
+def is_num_by_except(num):
+    try:
+        int(num)
+        return True
+    except ValueError:
+        return False
 
 def chooseAdxID(path):
     adx = ''

@@ -21,6 +21,7 @@ import random, time, os, sys, socket
 from handlers.showhandler import *
 from handlers.clickhandler import *
 from scheduler.countercache import *
+from scheduler.createcache import *
 from handlers.cookiehandler import *
 #from scheduler.distributor import Distributor, Requester
 from tornado.ioloop import  IOLoop
@@ -126,6 +127,7 @@ class Broker(object):
         self.server_port = None
         self.cookie = CookieHanlder()
         self.countercache = CounterCache()
+        self.createcache =  CreateCache()
         #self.dist = Distributor()
         #self.requester = Requester()
         self.adxPriceParser = AdxPriceParser()

@@ -137,21 +137,42 @@ class SuperShowHandler(tornado.web.RequestHandler):
 
     def customResult(self):
         self.set_header("Content-Type", "text/html")
-
+        '''
         create_dic = {
             CRT_KEY_TYPE : 'img',
             CRT_KEY_MONITOR_URL : '',
             CRT_KEY_MATERIALS:[ { CRT_KEY_WIDTH:'300', CRT_KEY_HEIGHT:'250', CRT_KEY_CLICK_URL:'http://www.hao123.com',\
                                 CRT_KEY_URL:'http://123.56.15.234/data/creative_files/1/1/5de39424bfa942b8aaecdeee97b1b58e.jpg',}]
 
-        }
-        if self.of == OF_FLAG_JSON:
-            back = creatDspAdBack(self.dic, create_dic)
-            self.write(back)
+        }'''
+        '''get create detail '''
+        create_dic = None
+        if self.dic.has_key(PARA_KEY_CID):
+            create_dic = self.broker.createcache.getCreateDetail(self.dic[PARA_KEY_CID])
+        else:
+            logger.warn('Has No CreateID!')
+
+        if create_dic is None:
+            logger.error('CreateID:%r is Not In Configure!' % self.dic[PARA_KEY_CID])
+        else:
+            if self.of == OF_FLAG_JSON:
+                back = creatDspAdBack(self.dic, create_dic)
+                logger.debug(back)
+                self.write(back)
+
         self.finish()
 
+    def paraCheck(self):
+        if not is_num_by_except(self.dic[PARA_KEY_CID]):
+            logger.warn("CreateID is no except num:%r" % self.dic[PARA_KEY_CID])
+            return False
+        if not is_num_by_except(self.dic[PARA_KEY_ADX]):
+            logger.warn("UnionID is no except num:%r" % self.dic[PARA_KEY_ADX])
+            return False
+        return True
+
     def getUriPar(self):
-        self.dic['unionid'] = self.get_argument('x', default = "")
+        self.dic['unionid'] = self.get_argument('x', default = 0)
         self.dic['executeid'] = self.get_argument('e', default = "")
         self.dic['creativeid'] = self.get_argument('c', default = "")
         self.dic['pid'] = self.get_argument('s', default = "")
@@ -178,7 +199,12 @@ class SuperShowHandler(tornado.web.RequestHandler):
             self.time = int(time.time())
             self.dic['t'] = str( self.time )
             price = self.get_argument("p", default = '')
+
+            if not self.paraCheck():
+                return 
+
             if price:
+                self.adx = int(self.dic['unionid'])
                 self.parsePrice(str(price))
                 self.dic['exchange_price'] = str(self.real_price)
 
@@ -191,6 +217,5 @@ class SuperShowHandler(tornado.web.RequestHandler):
             return
         except Exception, e:
             logger.error("SuperShowHandler Err:%s request:%r" % (e, self.request))
-            self.customResult()
             return
 
