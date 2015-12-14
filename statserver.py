@@ -190,7 +190,6 @@ if __name__ == '__main__':
         broker.pid = os.getpid()
         if not MULT_PROCESS_MODEL:
             broker.pid_file_init()
-        #init_syslog()
    
         # Start HttpSock Thread
         http = HttpLoop(broker)
