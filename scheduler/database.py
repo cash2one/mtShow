@@ -250,6 +250,25 @@ class Database(object):
             print e
             return 0
 
+    def getSourceIDInfo(self, source_id):
+        try:
+            self.switch()
+            key = "click:source:%s" % source_id
+            self.red._get(key)
+        except Exception, e:
+            print e
+
+    def setSourceIDInfo(self, source_id, value):
+        try:
+            tm = 7776000 # 90*24*60*60
+            self.switch()
+            key = "click:source:%s" % source_id
+            self.red._set(key, value)
+            return self.red._expire(key, tm)
+        except Exception, e:
+            print 'getSourceIDInfo:%s' % e
+            return 0
+
     def getCreateInfo(self, cid):
         try:
             self.switch()

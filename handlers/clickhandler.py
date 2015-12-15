@@ -35,6 +35,7 @@ class SuperClickHandler(tornado.web.RequestHandler):
         self.broker = broker
         self.cookiehandler = self.broker.cookie
         self.ob_msg_server = broker.msg_server
+        self.db = broker.database
 
     def prepare(self):
         self.set_header('Pragma', 'no-cache')
@@ -112,15 +113,38 @@ class SuperClickHandler(tornado.web.RequestHandler):
         self.of = self.get_argument('of', default = OF_FLAG_JSON)
         self.aurl = self.get_argument("url", default = None)
 
+    def sourceID(self):
+        try:
+            '''generate id'''
+            for i in xrange(100):
+               sid = random_str()
+               res = self.db.getSourceIDInfo(sid)
+               if not res:
+                   self.dic[PARA_KEY_SOURCEID] = sid
+                   break
+               else:
+                   continue
+            '''set id'''
+            if self.dic.has_key(PARA_KEY_SOURCEID):
+                info = json.dumps(self.dic)
+                self.db.setSourceIDInfo( self.dic[PARA_KEY_SOURCEID], info )         
+                logger.info('SourceID:%r' % self.dic[PARA_KEY_SOURCEID])
+            else:
+                logger.error('No SourceID Generate!')
+        except Exception,e:
+            logger.warn(e)
+
     def returnGif(self):
         self.set_header('Content-Type', 'image/gif')
         self.write(IMG_DATA)
 
     def dealRedirect(self):
-        self.dic['click_sourceid'] = random_str()
         if self.aurl:
-            logger.info("Url:%s" % self.aurl)
-            self.redirect(self.aurl)
+            rurl = self.aurl
+            if self.dic.has_key(PARA_KEY_SOURCEID):
+                rurl = self.aurl.replace('{source_id}', str(self.dic[PARA_KEY_SOURCEID]))
+            logger.info("Url:%s" % rurl)
+            self.redirect(rurl)
         else:
             logger.info('No Url')
 
@@ -135,16 +159,15 @@ class SuperClickHandler(tornado.web.RequestHandler):
             self.getIp()
             self.dealCookie()
             self.getUriPar()
+            self.sourceID()
             self.dealRedirect()
             self.recordClick()
             self.userClickRecord()
             self.sendMsg()
 
-            #print aurl
             logger.debug("-----------------------------------------------")
         except Exception, e:
             logger.error(e)
             self.redirect(self.aurl)
-            #self.dealRedirect()
             return
 
