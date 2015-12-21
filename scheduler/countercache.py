@@ -27,7 +27,7 @@ class CounterCache(threading.Thread):
         self.m_Cache_A = defaultdict()
         self.m_Cache_B = defaultdict()
 
-        self.database = Database(redis_conf = REDISEVER)
+        self.database = Database(redis_conf = CONFIG_REDISEVER)
 
         self.cacheInit(self.m_Cache_A)
         self.cacheInit(self.m_Cache_B)

@@ -35,8 +35,8 @@ SERVER_PORT = [9901,9904]
 '''频次控制接收端口'''
 FREQ_PORT = 7800
 
-REDISEVER = (("192.168.1.1",6379),)
-
+REDISEVER = (("192.168.1.5",6379),)
+CONFIG_REDISEVER = (("192.168.1.1",6379),)
 '''
     AdExchange info
 '''
