@@ -132,7 +132,7 @@ class Broker(object):
         #self.requester = Requester()
         self.adxPriceParser = AdxPriceParser()
         self.msg_server = KafkaCon()
-        self.database = Database(redis_conf = REDISEVER)
+        self.database = Database(redis_conf = REDISEVER, password = STATUS_REDIS_PASS)
 
     def daemonize(self):
         pid = os.fork()
