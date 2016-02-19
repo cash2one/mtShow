@@ -64,7 +64,7 @@ class SuperShowHandler(tornado.web.RequestHandler):
                 self.set_cookie(DEF_USER_COOKIE, self.ucookie, domain=DOMAIN, expires_days=UC_EXPIRES)
             else:
                 if not self.cookiehandler.checkCookie(self.ucookie):
-                    logger.error("UserCookie:%s is illegal!" % self.ucookie)
+                    logger.warn("UserCookie:%s is illegal!" % self.ucookie)
                     self.ucookie = self.cookiehandler.setCookie()
                     self.set_cookie(DEF_USER_COOKIE, self.ucookie, domain=DOMAIN, expires_days=UC_EXPIRES)
             self.dic['userid'] = self.ucookie
@@ -85,7 +85,7 @@ class SuperShowHandler(tornado.web.RequestHandler):
                 return True
         except Exception, e:
             self.real_price = 0
-            logger.error('SuperShowHandler/parsePrice: %s' % e)
+            logger.warn('SuperShowHandler/parsePrice: %s' % e)
             return False
 
     def record(self, msg):
@@ -97,10 +97,10 @@ class SuperShowHandler(tornado.web.RequestHandler):
             aid = msg['advid'] if msg.has_key('advid') else None
             dealprice = msg["exchange_price"] if msg.has_key('exchange_price') else 0
             '''increase user freq'''
-            if pid and tid and eid:
-                sendUserFreq(rtb_type, tid, eid, pid)
-            else:
-                pass
+            #if pid and tid and eid:
+            #    sendUserFreq(rtb_type, tid, eid, pid)
+            #else:
+            #    pass
             try:
                 if eid and pid and aid:
                     dc = defaultdict()

@@ -9,7 +9,7 @@ from time import localtime,strftime
 
 
 class Database(object):
-    def __init__(self, redis_conf = None):
+    def __init__(self, redis_conf = None, password = None):
         self.counter = 0
         self.red = None
         self.red_list = list()
@@ -17,13 +17,13 @@ class Database(object):
         self.hour = lambda : str(datetime.now().hour).zfill(2)
         #self.today = lambda : "%d-%2d-%02d" % (datetime.now().year, datetime.now().month, datetime.now().day)
         self.today = lambda : strftime("%Y-%m-%d", localtime())
-        self.initDatabase()
+        self.initDatabase(password)
 
-    def initDatabase(self):
+    def initDatabase(self, password):
         if isinstance(self.m_redis_conf, tuple):
             for r in self.m_redis_conf:
                 try:
-                    self.red_list.append( RedisDb(r[0],r[1]) )
+                    self.red_list.append( RedisDb(r[0],r[1], password = password) )
                 except Exception, e:
                     print e
 

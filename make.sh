@@ -17,12 +17,6 @@ cd ..
 
 cd priceparser
 
-echo "-------------------"
-echo "amdecode compile..."
-echo "-------------------"
-cd amdecode
-make clean;make
-cd ..
 
 echo "-------------------"
 echo "baidecode compile..."
@@ -33,38 +27,9 @@ cd ..
 
 
 echo "-------------------"
-echo "shdecode compile..."
-echo "-------------------"
-cd shdecode
-make clean;make
-cd ..
-
-
-echo "-------------------"
-echo "tedecode compile..."
-echo "-------------------"
-cd tedecode
-make clean;make
-cd ..
-
-echo "-------------------"
 echo "jxdecode compile..."
 echo "-------------------"
 cd jxdecode
-make clean;make
-cd ..
-
-echo "-------------------"
-echo "gydecode compile..."
-echo "-------------------"
-cd gydecode
-make clean;make
-cd ..
-
-echo "-------------------"
-echo "ggdecode compile..."
-echo "-------------------"
-cd ggdecode
 make clean;make
 cd ..
 

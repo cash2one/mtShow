@@ -23,20 +23,21 @@ T_CLK = "mt-click-v1"
 T_CPA = "test"
 
 
-MSG_SERVER = ('192.168.1.5',9092)
+MSG_SERVER = ('192.168.2.51',9092)
 SENDMSG = True
 PART_NUM = 1
 
 MULT_PROCESS_MODEL = False
 
 '''iSHOW服务配置'''
-SERVER_PORT = [9901,9904]
+SERVER_PORT = [9901,9908]
 
 '''频次控制接收端口'''
 FREQ_PORT = 7800
 
-REDISEVER = (("192.168.1.5",6379),)
 CONFIG_REDISEVER = (("192.168.1.1",6379),)
+REDISEVER = (("08dce178449f48fb.m.cnbja.kvstore.aliyuncs.com",6379),)
+STATUS_REDIS_PASS = "08dce178449f48fb:MtqweBNM789"
 
 
 
@@ -56,5 +57,4 @@ ADX_MIZH_ID = 12
 ADX_GDT_ID  = 13
 ADX_GYIN_ID = 14
 ADX_WEIBO_ID = 16
-
 

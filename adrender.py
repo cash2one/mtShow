@@ -144,12 +144,12 @@ def creatDspAdBack( dic, create_dic ):
         res_back['pid'] = dic[PARA_KEY_PID] if dic.has_key(PARA_KEY_PID) else ''
         res_back['width'] = dic[PARA_KEY_WIDTH] if dic.has_key(PARA_KEY_WIDTH) else ''
         res_back['height'] = dic[PARA_KEY_HEIGHT] if dic.has_key(PARA_KEY_HEIGHT) else ''
-        res_back['width'] = '300'
-        res_back['height'] = '250'
+        #res_back['width'] = '300'
+        #res_back['height'] = '250'
         res_back['impid'] = dic[PARA_KEY_RID] if dic.has_key(PARA_KEY_RID) else ''
         res_back['advid'] = dic[PARA_KEY_ADVID] if dic.has_key(PARA_KEY_ADVID) else ''
         res_back['unid'] = dic[PARA_KEY_ADX] if dic.has_key(PARA_KEY_ADX) else ''
-        res_back['plid'] = ''
+        res_back['plid'] = dic[PARA_KEY_EID] if dic.has_key(PARA_KEY_EID) else ''
         res_back['gpid'] = dic[PARA_KEY_EID] if dic.has_key(PARA_KEY_EID) else ''
         res_back['cid'] = dic[PARA_KEY_CID] if dic.has_key(PARA_KEY_CID) else ''
         res_back['arid'] = dic[PARA_KEY_AREA] if dic.has_key(PARA_KEY_AREA) else ''
@@ -178,6 +178,8 @@ def creatDspAdBack( dic, create_dic ):
                 materail['p2'] = '000'
                 materail['p3'] = m[CRT_KEY_WIDTH] if m.has_key(CRT_KEY_WIDTH) else ''
                 materail['p4'] = m[CRT_KEY_HEIGHT] if m.has_key(CRT_KEY_HEIGHT) else ''
+                res_back['width'] = materail['p3']
+                res_back['height'] = materail['p4']
                 res_back['mtls'].append(materail)
         logger.debug(res_back)
         html = template.render(ad = res_back)
