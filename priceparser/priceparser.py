@@ -65,7 +65,7 @@ class PriceJux(PriceSuper):
 IS_BIG_ENDIAN = True  if socket.htons(1) == 1 else False
 class PriceTanx(PriceSuper):
     def __init__(self):
-        self.key = [0xfa,0xd0,0x35,0xed,0x83,0x54,0x1d,0x01,0x38,0x44,0x29,0x78,0x1a,0x5b,0x0a,0xe9]
+        self.key = [0x01,0xd5,0xba,0xaf,0x00,0x9c,0x4d,0xd6,0xbb,0x01,0xb7,0x11,0xfc,0x74,0x92,0x92]
 
     def parsePrice(self, bid_result):
         try:
@@ -115,7 +115,7 @@ class PriceTanx(PriceSuper):
                 result = True
             else:
                 result = False
-
+            self.real_price = real_pri
             return self.real_price
         except Exception, e:
             print('PriceTanx/parsePrice Error! %s en_msg:%s' % (e,bid_result) )
