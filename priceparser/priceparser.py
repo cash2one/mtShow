@@ -115,7 +115,8 @@ class PriceTanx(PriceSuper):
                 result = True
             else:
                 result = False
-            self.real_price = real_pri
+            #self.real_price = real_pri
+            self.real_price = 0 if real_pri > 100000 else real_pri
             return self.real_price
         except Exception, e:
             print('PriceTanx/parsePrice Error! %s en_msg:%s' % (e,bid_result) )
