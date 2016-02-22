@@ -242,7 +242,7 @@ class Database(object):
 
     def setUserClickInfo(self, key, field, value):
         try:
-            tm = 7776000 # 90*24*60*60
+            tm = 604800 # 7*24*60*60
             self.switch()
             self.red._hset(key, field, value)
             return self.red._expire(key, tm)
@@ -260,7 +260,7 @@ class Database(object):
 
     def setSourceIDInfo(self, source_id, value):
         try:
-            tm = 7776000 # 90*24*60*60
+            tm = 604800 # 7*24*60*60
             self.switch()
             key = "click:source:%s" % source_id
             self.red._set(key, value)
