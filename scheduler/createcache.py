@@ -14,14 +14,20 @@ logger = logging.getLogger(__name__)
 class CreateCache():
     def __init__(self):
         self.database = Database(redis_conf = CONFIG_REDISEVER)
-
+        self.cache = defaultdict()
+        
     def getCreateDetail(self, cid):
         try:
-            res = self.database.getCreateInfo(cid)
-            if not res:
-                return None
+            if self.cache.has_key(cid):
+                return self.cache[cid]
             else:
-                return json.loads(res)
+                res = self.database.getCreateInfo(cid)
+                if not res:
+                    return None
+                else:
+                    cid_detail = json.loads(res)
+                    self.cache[cid] = cid_detail
+                    return cid_detail
         except Exception,e:
             logger.error(e)
 

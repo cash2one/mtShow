@@ -69,6 +69,7 @@ class PriceTanx(PriceSuper):
 
     def parsePrice(self, bid_result):
         try:
+            bid_result = bid_result.replace('-','%')
             src = base64.b64decode(urllib.unquote(bid_result.replace(" ","+")))
             if len(src) != 25:
                 return False
