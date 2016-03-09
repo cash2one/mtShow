@@ -136,6 +136,13 @@ class SuperShowHandler(tornado.web.RequestHandler):
         self.write(IMG_DATA)
 
     def customResult(self):
+        model = NORMAL_TEM
+        if self.res == 'none':
+            logger.info('res: %r' % self.res)
+            return 
+        if self.res == 'mraid':
+            model = MRAID_TEM
+
         self.set_header("Content-Type", "text/html")
         '''
         create_dic = {
@@ -149,6 +156,7 @@ class SuperShowHandler(tornado.web.RequestHandler):
         create_dic = None
         if self.dic.has_key(PARA_KEY_CID):
             create_dic = self.broker.createcache.getCreateDetail(self.dic[PARA_KEY_CID])
+            logger.debug("create:%r" % create_dic)
         else:
             logger.warn('Has No CreateID!')
 
@@ -156,7 +164,7 @@ class SuperShowHandler(tornado.web.RequestHandler):
             logger.error('CreateID:%r is Not In Configure!' % self.dic[PARA_KEY_CID])
         else:
             if self.of == OF_FLAG_JSON:
-                back = creatDspAdBack(self.dic, create_dic)
+                back = creatDspAdBack(self.dic, create_dic, template = model)
                 logger.debug(back)
                 self.write(back)
 
@@ -183,6 +191,7 @@ class SuperShowHandler(tornado.web.RequestHandler):
         self.dic['adx_uid'] = self.get_argument('u', default = "")
         self.dic['xcurl'] = self.get_argument('l', default = "")
         self.of = self.get_argument('of', default = OF_FLAG_JSON)
+        self.res = self.get_argument('res', default = None)
         #print self.dic
 
     @tornado.web.asynchronous
@@ -208,8 +217,8 @@ class SuperShowHandler(tornado.web.RequestHandler):
                 self.parsePrice(str(price))
                 self.dic['exchange_price'] = str(self.real_price)
 
-            self.record(self.dic)
-            self.sendMsg()
+                self.record(self.dic)
+                self.sendMsg()
 
             self.customResult()
 

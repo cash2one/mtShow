@@ -4,6 +4,10 @@ import socket
 from random import Random
 from settings import *
 
+''' template '''
+NORMAL_TEM = 0
+MRAID_TEM  = 1
+
 '''area'''
 DEFAULT_AREA = "0086-ffff-ffff"
 

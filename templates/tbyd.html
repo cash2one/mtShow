@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="user-scalable=no, width=device-width,initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+    <style type="text/css">
+        * {margin: 0; padding: 0; border:none;}
+    </style>
+    <script type="text/javascript" src="http://cdn.tanx.com/t/tanxmobile/mraid.js"></script>
+</head>
+<body>
+<script>
+    var mtadinfo = {
+        mt_ad_pid: "{{ ad['pid'] }}",
+        mt_ad_width: "{{ ad['width'] }}",
+        mt_ad_height: "{{ ad['height'] }}",
+        mt_ad_impid: "{{ ad['impid'] }}",
+        mt_ad_advid: "{{ ad['advid'] }}",
+        mt_ad_unid: "{{ ad['unid'] }}",
+        mt_ad_plid: "{{ ad['plid'] }}",
+        mt_ad_gpid: "{{ ad['gpid'] }}",
+        mt_ad_cid: "{{ ad['cid'] }}",
+        mt_ad_arid: "{{ ad['arid'] }}",
+        mt_ad_ctype: "4",
+        mt_ad_xcurl: "{{ ad['xcurl'] }}",
+        mt_ad_of: "0",
+        mt_ad_tview: "{{ ad['tview'] }}",
+        mt_ad_mtls: [{
+            p0: "{{ ad['mtls'][0]['p0'] }}",
+            p1: "{{ ad['mtls'][0]['p1'] }}",
+            p2: "{{ ad['mtls'][0]['p2'] }}",
+            p3: "{{ ad['mtls'][0]['p3'] }}",
+            P4: "{{ ad['mtls'][0]['p4'] }}",
+            p5: "",
+            p6: "",
+            p7: "",
+            p8: "",
+            p9: ""
+        }]
+    };
+document.write('\<script type="text/javascript" src="http://mtty-cdn.mtty.com/mt_mraid.js">\<\/script>');
+</script>
+</body>
+</html>

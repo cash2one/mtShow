@@ -35,7 +35,7 @@ SERVER_PORT = [9901,9908]
 '''频次控制接收端口'''
 FREQ_PORT = 7800
 
-CONFIG_REDISEVER = (("192.168.1.1",6379),)
+CONFIG_REDISEVER = (("08dce178449f48fb.m.cnbja.kvstore.aliyuncs.com",6379),)
 REDISEVER = (("08dce178449f48fb.m.cnbja.kvstore.aliyuncs.com",6379),)
 STATUS_REDIS_PASS = "08dce178449f48fb:MtqweBNM789"
 

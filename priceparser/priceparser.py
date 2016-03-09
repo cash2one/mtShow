@@ -22,6 +22,8 @@ from utils.general import *
 from baidecode.baidecode import baidecode
 from jxdecode.jxdecode import jxdecode
 
+import logging
+logger = logging.getLogger(__name__)
 
 BS = AES.block_size
 pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
@@ -116,11 +118,13 @@ class PriceTanx(PriceSuper):
                 result = True
             else:
                 result = False
+
             #self.real_price = real_pri
             self.real_price = 0 if real_pri > 100000 else real_pri
+
             return self.real_price
         except Exception, e:
-            print('PriceTanx/parsePrice Error! %s en_msg:%s' % (e,bid_result) )
+            logger.warn('PriceTanx/parsePrice Error! %s en_msg:%s' % (e,bid_result) )
             self.real_price = 0
             return False
 

@@ -8,6 +8,10 @@ from utils.general import *
 
 env = Environment(loader=PackageLoader('adrender','templates'))
 
+NORMAL_TEMPLATE = env.get_template("html_1.html")
+MRAID_TEMPLATE = env.get_template("tbyd.html")
+
+
 MONITOR_HOST = "http://click.mtty.com"
 #MONITOR_HOST = "http://10.111.32.15:10001"
 IMP_MONITOR_PATH = "/mt/show?"
@@ -137,10 +141,14 @@ def defaultAdJsonBack():
 
 
 
-def creatDspAdBack( dic, create_dic ):
+def creatDspAdBack( dic, create_dic , template = NORMAL_TEM):
     try:
         res_back = defaultdict()
-        template = env.get_template("html_1.html")
+        #template = env.get_template("html_1.html")
+        temp = NORMAL_TEMPLATE
+        logger.info("Template:%r" % template)
+        if template == MRAID_TEM:
+            temp = MRAID_TEMPLATE
         res_back['pid'] = dic[PARA_KEY_PID] if dic.has_key(PARA_KEY_PID) else ''
         res_back['width'] = dic[PARA_KEY_WIDTH] if dic.has_key(PARA_KEY_WIDTH) else ''
         res_back['height'] = dic[PARA_KEY_HEIGHT] if dic.has_key(PARA_KEY_HEIGHT) else ''
@@ -181,8 +189,20 @@ def creatDspAdBack( dic, create_dic ):
                 res_back['width'] = materail['p3']
                 res_back['height'] = materail['p4']
                 res_back['mtls'].append(materail)
+        elif create_dic.has_key(CRT_KEY_URL):
+            m = create_dic
+            if True:
+                materail = defaultdict()
+                materail['p0'] = m[CRT_KEY_URL] if m.has_key(CRT_KEY_URL) else ''
+                materail['p1'] = m[CRT_KEY_CLICK_URL] if m.has_key(CRT_KEY_CLICK_URL) else ''
+                materail['p2'] = '000'
+                materail['p3'] = m[CRT_KEY_WIDTH] if m.has_key(CRT_KEY_WIDTH) else ''
+                materail['p4'] = m[CRT_KEY_HEIGHT] if m.has_key(CRT_KEY_HEIGHT) else ''
+                res_back['width'] = materail['p3']
+                res_back['height'] = materail['p4']
+                res_back['mtls'].append(materail)
         logger.debug(res_back)
-        html = template.render(ad = res_back)
+        html = temp.render(ad = res_back)
         #j_back = "%s(%s)" % (call, str( json.dumps(res_back) ))
         #j_back = "%s" %  str( json.dumps(res_back) )
         return html
