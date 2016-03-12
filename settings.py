@@ -23,7 +23,7 @@ T_CLK = "mt-click-v1"
 T_CPA = "test"
 
 
-MSG_SERVER = ('192.168.2.51',9092)
+MSG_SERVER = ('192.168.2.53',9092)
 SENDMSG = True
 PART_NUM = 1
 
