@@ -128,6 +128,66 @@ class PriceTanx(PriceSuper):
             self.real_price = 0
             return False
 
+class PriceYouku(PriceSuper):
+    def __init__(self,key=None):
+        self.key = 'e48c06fe0da2403db2de26e2fcfe14d5' #YKTOKEN
+
+    def hexChar2int(self, oc):
+        c = ord(oc)
+        if c >= ord('0') and c <= ord('9'):
+            i = c - ord('0')
+            return i
+        elif c >= ord('a') and c <= ord('f'):
+            i = c - ord('a') + 10
+            return i
+        elif c >= ord('A') and c <= ord('F'):
+            i = c - ord('A') + 10
+            return i
+        else:
+            return -2;
+
+    def hex2array(self, hex):
+        result = ['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1']
+        strlen = len(hex)
+        if(32 != strlen):
+            return []
+        myrange = [0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30]
+        for i in myrange:
+            tmp_a = self.hexChar2int(hex[i])
+            tmp_b = self.hexChar2int(hex[i + 1])
+            if (-2 == tmp_a) or (-2 == tmp_b):
+                return []
+            result[i/2] = chr((tmp_a << 4) + tmp_b)
+        return result
+
+    def dec(self, en_msg):
+        listkey = self.hex2array(self.key)
+        key = ''.join(listkey)
+        obj = AES.new(key, AES.MODE_ECB)
+        mod4 = len(en_msg) % 4
+        if mod4:
+            en_msg += ((4 - mod4) * '=')
+            pass
+        msg = base64.urlsafe_b64decode(en_msg)
+        msg1 = unpad(obj.decrypt(msg))
+        msgs = msg1.split("_")
+        return float(msgs[0])
+
+
+    def parsePrice(self, en_msg):
+        try:
+
+            real_pri = self.dec(str(en_msg))
+            if real_pri:
+                self.real_price = int(real_pri)
+
+            logger.debug("price: %d" % self.real_price)
+            return self.real_price
+
+        except Exception, e:
+            logger.error('PriceYouku/parsePrice: %s %s'% (e, en_msg))
+            return False
+
 class AdxPriceParser:
     def __init__(self):
         self.strategy = dict()
@@ -136,6 +196,7 @@ class AdxPriceParser:
             self.strategy[ADX_BES_ID] = PriceBaidu()
             self.strategy[ADX_JUXI_ID] = PriceJux()
             self.strategy[ADX_TANX_ID] = PriceTanx()
+            self.strategy[ADX_YUKU_ID] = PriceYouku()
         except Exception,e:
             print "AdxPriceParser:%r" % e
 
